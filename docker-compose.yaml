@@ -10,8 +10,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -24,8 +22,6 @@ services:
 
   redis:
     image: redis:7
-    ports:
-      - "6379:6379"
     command: >
       --requirepass redissecret
     volumes:
@@ -91,9 +87,6 @@ services:
         condition: service_completed_successfully
       ui:
         condition: service_started
-    ports:
-      - "80:80"
-      - "443:443"
     volumes:
       - nginx-generated:/etc/nginx/conf.d:ro
       - ./certs:/etc/nginx/certs:ro
@@ -238,8 +231,6 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared-tunnel
     command: tunnel --no-autoupdate --url http://api:8000 --metrics 0.0.0.0:2000
-    ports:
-      - "2000:2000" # Expose metrics endpoint
     networks:
       - app-network
 
