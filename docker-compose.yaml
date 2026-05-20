@@ -66,12 +66,13 @@ services:
       TURN_SECRET: "${TURN_SECRET:-}"
       FASTAPI_WORKERS: "${FASTAPI_WORKERS:-1}"
     volumes:
-      - ./scripts:/workspace/scripts:ro
+      - ./setup-scripts:/workspace/scripts:ro
       - ./deploy:/workspace/deploy:ro
       - ./certs:/certs:ro
       - nginx-generated:/generated/nginx
       - coturn-generated:/generated/coturn
     command:
+      - bash
       - /workspace/scripts/run_dograh_init.sh
 
   nginx:
