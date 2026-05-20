@@ -70,6 +70,7 @@ services:
     volumes:
       - nginx-generated:/generated/nginx
       - coturn-generated:/generated/coturn
+      - certs-shared:/certs
     command:
       - bash
       - /workspace/scripts/run_dograh_init.sh
@@ -86,6 +87,7 @@ services:
         condition: service_started
     volumes:
       - nginx-generated:/etc/nginx/conf.d:ro
+      - certs-shared:/etc/nginx/certs:ro
     networks:
       - app-network
 
@@ -198,6 +200,8 @@ volumes:
   nginx-generated:
     driver: local
   coturn-generated:
+    driver: local
+  certs-shared:
     driver: local
 
 networks:
