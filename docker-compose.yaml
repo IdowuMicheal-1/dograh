@@ -53,6 +53,27 @@ services:
       - app-network
 
   dograh-init:
+    build:
+      context: .
+      dockerfile: Dockerfile.init
+    container_name: dograh_init
+    environment:
+      ENVIRONMENT: "${ENVIRONMENT:-local}"
+      SERVER_IP: "${SERVER_IP:-}"
+      PUBLIC_HOST: "${PUBLIC_HOST:-}"
+      PUBLIC_BASE_URL: "${PUBLIC_BASE_URL:-}"
+      BACKEND_API_ENDPOINT: "${BACKEND_API_ENDPOINT:-http://localhost:8000}"
+      MINIO_PUBLIC_ENDPOINT: "${MINIO_PUBLIC_ENDPOINT:-http://localhost:9000}"
+      TURN_HOST: "${TURN_HOST:-}"
+      TURN_SECRET: "${TURN_SECRET:-}"
+      FASTAPI_WORKERS: "${FASTAPI_WORKERS:-1}"
+    volumes:
+      # ONLY the generated volumes remain. We deleted the local ones!
+      - nginx-generated:/generated/nginx
+      - coturn-generated:/generated/coturn
+    command:
+      - bash
+      - /workspace/scripts/run_dograh_init.sh
     image: bash:5.2
     container_name: dograh_init
     environment:
@@ -76,6 +97,20 @@ services:
       - /workspace/scripts/run_dograh_init.sh
 
   nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    container_name: nginx_https
+    depends_on:
+      dograh-init:
+        condition: service_completed_successfully
+      ui:
+        condition: service_started
+    volumes:
+      # ONLY the generated volume remains.
+      - nginx-generated:/etc/nginx/conf.d:ro
+    networks:
+      - app-network
     image: nginx:alpine
     container_name: nginx_https
     depends_on:
