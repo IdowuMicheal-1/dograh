@@ -57,6 +57,7 @@ services:
       context: .
       dockerfile: Dockerfile.init
     container_name: dograh_init
+    restart: "no"
     environment:
       ENVIRONMENT: "${ENVIRONMENT:-local}"
       SERVER_IP: "${SERVER_IP:-}"
